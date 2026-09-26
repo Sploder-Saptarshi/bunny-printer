@@ -21,10 +21,11 @@ jobs:
             exit 1
           fi
 
-          IMAGE=$(ls images | shuf -n 1)
+          FILES=(images/*)
+          IMAGE="${FILES[RANDOM % ${#FILES[@]}]}"
           echo "Selected image: $IMAGE"
 
           curl -X POST \
             -F "content=bunny" \
-            -F "file=@images/$IMAGE" \
+            -F "file=@$IMAGE" \
             "$WEBHOOK_URL"
