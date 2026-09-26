@@ -1,0 +1,30 @@
+name: Send Bunny
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-bunny:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Send random bunny picture to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "WEBHOOK_URL secret is not set"
+            exit 1
+          fi
+
+          IMAGE=$(ls images | shuf -n 1)
+          echo "Selected image: $IMAGE"
+
+          curl -X POST \
+            -F "content=bunny" \
+            -F "file=@images/$IMAGE" \
+            "$WEBHOOK_URL"
